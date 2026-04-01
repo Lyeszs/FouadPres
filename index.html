@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fouad Gana — Portfolio QLIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #E8321A;
+  --red-dark: #b82210;
+  --bg: #060608;
+  --bg2: #0b0b10;
+  --white: #F2EEE8;
+  --grey: #7a7a8a;
+  --panel: rgba(10,10,14,0.88);
+}
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: auto; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cur {
+  position: fixed; width:12px; height:12px;
+  background: var(--red); border-radius:50%;
+  pointer-events:none; z-index:9999;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s;
+}
+#cur-ring {
+  position:fixed; width:40px; height:40px;
+  border: 1px solid rgba(232,50,26,.5); border-radius:50%;
+  pointer-events:none; z-index:9998;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s, border-color .2s;
+}
+
+/* ── THREE.JS CANVAS ── */
+#bg {
+  position:fixed; top:0; left:0;
+  width:100%; height:100%;
+  z-index:0; pointer-events:none;
+}
+
+/* ── SCROLL PROGRESS ── */
+#sp {
+  position:fixed; top:0; left:0; height:2px;
+  background: var(--red); z-index:300; width:0%;
+}
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  padding:22px 48px;
+  display:flex; justify-content:space-between; align-items:center;
+  background: linear-gradient(to bottom, rgba(6,6,8,.9) 0%, transparent 100%);
+}
+.nav-logo {
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:900; font-size:22px; color:var(--white);
+  text-decoration:none; letter-spacing:.05em;
+}
+.nav-logo span { color:var(--red); }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a {
+  color:var(--grey); text-decoration:none;
+  font-size:12px; font-weight:500; letter-spacing:.12em;
+  text-transform:uppercase; transition:color .3s;
+}
+.nav-links a:hover { color:var(--red); }
+
+/* ── CONTENT WRAPPER ── */
+.content { position:relative; z-index:10; }
+
+/* ── HERO ── */
+#hero {
+  height:100vh; display:flex; flex-direction:column;
+  justify-content:center; padding:0 10vw; position:relative; overflow:hidden;
+}
+.hero-glow {
+  position:absolute; width:600px; height:600px; border-radius:50%;
+  background:radial-gradient(circle, rgba(232,50,26,.12) 0%, transparent 70%);
+  top:-150px; left:-150px; pointer-events:none; z-index:0;
+}
+.hero-label {
+  font-size:11px; letter-spacing:.35em; text-transform:uppercase;
+  color:var(--red); margin-bottom:22px; position:relative; z-index:1;
+  opacity:0; transform:translateY(16px);
+  animation: fadeUp .7s ease .4s forwards;
+}
+.hero-name {
+  font-family:'Big Shoulders Display',sans-serif; font-weight:900;
+  font-size:clamp(70px,14vw,190px); line-height:.88; text-transform:uppercase;
+  color:var(--white); position:relative; z-index:1;
+  opacity:0; transform:translateY(40px);
+  animation: fadeUp 1s ease .6s forwards;
+}
+.hero-name span { color:var(--red); display:block; }
+.hero-sub {
+  margin-top:28px; max-width:480px; font-size:16px; font-weight:300;
+  line-height:1.75; color:var(--grey); position:relative; z-index:1;
+  opacity:0; transform:translateY(16px);
+  animation: fadeUp .7s ease .9s forwards;
+}
+.hero-cta {
+  margin-top:44px; display:flex; gap:20px; align-items:center;
+  position:relative; z-index:1;
+  opacity:0; transform:translateY(16px);
+  animation: fadeUp .7s ease 1.1s forwards;
+}
+.btn-red {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 32px; background:var(--red); color:var(--white);
+  text-decoration:none; font-size:13px; font-weight:500;
+  letter-spacing:.12em; text-transform:uppercase;
+  border:none; cursor:none; font-family:inherit;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+  transition:background .3s, transform .3s;
+}
+.btn-red:hover { background:var(--red-dark); transform:translateY(-2px); }
+.btn-ghost {
+  font-size:13px; color:var(--grey); text-decoration:none;
+  letter-spacing:.05em; transition:color .3s; display:flex; align-items:center; gap:6px;
+}
+.btn-ghost:hover { color:var(--white); }
+.hero-stats {
+  position:absolute; right:10vw; bottom:90px;
+  display:flex; flex-direction:column; gap:22px;
+  opacity:0; animation: fadeIn 1s ease 1.3s forwards; z-index:1;
+}
+.stat { text-align:right; }
+.stat-n {
+  font-family:'Big Shoulders Display',sans-serif; font-size:52px;
+  font-weight:900; color:var(--white); line-height:1;
+}
+.stat-l {
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--red);
+}
+.scroll-cue {
+  position:absolute; bottom:44px; left:50%;
+  transform:translateX(-50%); display:flex; flex-direction:column;
+  align-items:center; gap:8px; z-index:1;
+  opacity:0; animation: fadeIn 1s ease 1.6s forwards;
+}
+.scroll-cue span { font-size:10px; letter-spacing:.25em; text-transform:uppercase; color:var(--grey); }
+.scroll-line {
+  width:1px; height:56px;
+  background:linear-gradient(to bottom,var(--red),transparent);
+  animation: pulse 2s ease infinite;
+}
+
+/* ── SECTION BASE ── */
+section { position:relative; z-index:10; }
+.si { max-width:1180px; margin:0 auto; padding:110px 48px; }
+.s-lbl {
+  font-size:11px; letter-spacing:.4em; text-transform:uppercase;
+  color:var(--red); margin-bottom:14px;
+  opacity:0; transform:translateX(-18px); transition:all .6s ease;
+}
+.s-title {
+  font-family:'Big Shoulders Display',sans-serif; font-weight:900;
+  font-size:clamp(46px,7.5vw,90px); text-transform:uppercase; line-height:.9;
+  color:var(--white); opacity:0; transform:translateY(28px);
+  transition:all .8s ease .1s;
+}
+.s-num {
+  font-family:'Big Shoulders Display',sans-serif; font-size:220px;
+  font-weight:900; color:rgba(255,255,255,.018);
+  position:absolute; top:70px; right:40px; line-height:1;
+  pointer-events:none; user-select:none;
+}
+.divider {
+  width:56px; height:2px; background:var(--red);
+  margin:22px 0 44px; opacity:0; transform:scaleX(0);
+  transform-origin:left; transition:all .6s ease .3s;
+}
+section.vis .s-lbl { opacity:1; transform:none; }
+section.vis .s-title { opacity:1; transform:none; }
+section.vis .divider { opacity:1; transform:scaleX(1); }
+
+/* ── PARCOURS ── */
+#parcours { background:var(--bg2); }
+.timeline { display:flex; flex-direction:column; margin-top:52px; position:relative; }
+.timeline::before {
+  content:''; position:absolute; left:20px; top:0; bottom:0;
+  width:1px; background:linear-gradient(to bottom,var(--red),transparent);
+}
+.tl-item {
+  display:grid; grid-template-columns:44px 1fr;
+  gap:28px; padding-bottom:52px;
+  opacity:0; transform:translateX(-26px); transition:all .6s ease;
+}
+.tl-item.vis { opacity:1; transform:none; }
+.tl-dot {
+  width:40px; height:40px;
+  background:var(--bg); border:1.5px solid var(--red); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Big Shoulders Display',sans-serif; font-weight:700;
+  font-size:15px; color:var(--red); flex-shrink:0; z-index:1;
+  position:relative;
+}
+.tl-date {
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--red); margin-bottom:6px;
+}
+.tl-title {
+  font-family:'Big Shoulders Display',sans-serif; font-size:26px;
+  font-weight:700; color:var(--white); margin-bottom:6px;
+}
+.tl-desc { font-size:14px; font-weight:300; color:var(--grey); line-height:1.65; }
+
+/* ── À PROPOS ── */
+#propos { background:var(--bg); }
+.propos-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:70px; margin-top:52px;
+}
+.propos-txt {
+  font-size:16px; font-weight:300; line-height:1.85;
+  color:rgba(242,238,232,.72);
+}
+.propos-txt strong { color:var(--white); font-weight:500; }
+.skills { display:flex; flex-direction:column; gap:18px; }
+.sk-item {
+  opacity:0; transform:translateX(18px); transition:all .5s ease;
+}
+section.vis .sk-item:nth-child(1){transition-delay:.05s}
+section.vis .sk-item:nth-child(2){transition-delay:.12s}
+section.vis .sk-item:nth-child(3){transition-delay:.19s}
+section.vis .sk-item:nth-child(4){transition-delay:.26s}
+section.vis .sk-item:nth-child(5){transition-delay:.33s}
+section.vis .sk-item:nth-child(6){transition-delay:.4s}
+section.vis .sk-item:nth-child(7){transition-delay:.47s}
+section.vis .sk-item:nth-child(8){transition-delay:.54s}
+section.vis .sk-item { opacity:1; transform:none; }
+.sk-hd { display:flex; justify-content:space-between; margin-bottom:7px; }
+.sk-n { font-size:13px; font-weight:500; color:var(--white); }
+.sk-pct { font-size:12px; color:var(--red); font-weight:500; }
+.sk-bg { height:2px; background:rgba(255,255,255,.08); border-radius:1px; overflow:hidden; }
+.sk-fill {
+  height:100%; background:linear-gradient(to right,var(--red),#ff7055);
+  border-radius:1px; width:0%; transition:width 1.1s cubic-bezier(.4,0,.2,1) .5s;
+}
+
+/* ── SAÉ ── */
+#sae { background:var(--bg2); }
+.sae-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:56px; align-items:start; margin-top:52px;
+}
+.sae-txt p {
+  font-size:15px; font-weight:300; line-height:1.82;
+  color:rgba(242,238,232,.72); margin-bottom:18px;
+}
+.sae-txt p strong { color:var(--white); font-weight:500; }
+.tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+.tag {
+  padding:5px 14px; border:1px solid rgba(232,50,26,.4);
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--red); transition:all .3s;
+}
+.tag:hover { background:var(--red); color:var(--white); }
+.sae-box {
+  border:1px solid rgba(232,50,26,.18);
+  background:rgba(232,50,26,.04); padding:36px;
+  position:relative; overflow:hidden;
+}
+.sae-bg-txt {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:'Big Shoulders Display',sans-serif; font-size:96px; font-weight:900;
+  color:rgba(232,50,26,.04); white-space:nowrap; pointer-events:none;
+}
+.sae-label {
+  font-family:'Big Shoulders Display',sans-serif; font-size:46px;
+  font-weight:900; color:var(--red); margin-bottom:12px;
+}
+.sae-desc { font-size:14px; color:var(--grey); line-height:1.7; margin-bottom:24px; }
+
+.sae-kpis { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.kpi {
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);
+  padding:16px; text-align:center;
+}
+.kpi-val {
+  font-family:'Big Shoulders Display',sans-serif; font-size:30px;
+  font-weight:900; color:var(--red);
+}
+.kpi-lbl {
+  font-size:10px; color:var(--grey); text-transform:uppercase;
+  letter-spacing:.1em; margin-top:2px;
+}
+
+/* ── IMAGES DYNAMIQUES SAÉ (Grand format pleine largeur) ── */
+.sae-images-wrapper {
+  margin-top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.sae-img {
+  width: 100%;
+  height: 450px; /* Taille massive */
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,.08);
+  filter: grayscale(100%) contrast(1.1) brightness(0.7);
+  transition: all 0.6s ease;
+  opacity: 0;
+  transform: translateY(30px);
+}
+.sae-img:hover {
+  filter: grayscale(0%) contrast(1) brightness(1);
+  border-color: var(--red);
+  transform: scale(1.02);
+  z-index: 3;
+}
+section.vis .sae-img { opacity: 1; transform: translateY(0); }
+section.vis .sae-img:nth-child(2) { transition-delay: 0.2s; }
+
+/* ── NOUVELLE SECTION: PROJETS VIDÉO ── */
+#projets { background:var(--bg); }
+.projet-box {
+  border: 1px dashed rgba(232,50,26,.5);
+  background: rgba(232,50,26,.02);
+  padding: 60px;
+  text-align: center;
+  margin-top: 52px;
+  transition: all 0.3s ease;
+  cursor: none; /* Le JS gère l'interaction */
+}
+.projet-box:hover {
+  background: rgba(232,50,26,.06);
+  border: 1px solid var(--red);
+  transform: translateY(-4px);
+}
+.projet-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.projet-title {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-size: 32px;
+  color: var(--white);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.projet-desc {
+  font-size: 14px;
+  color: var(--grey);
+  margin-top: 8px;
+}
+
+/* ── FENÊTRE MODALE VIDÉO ── */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-content {
+  width: 80%;
+  max-width: 1000px;
+  background: #111;
+  border: 1px solid var(--red);
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.4s ease;
+}
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+.modal-close {
+  position: absolute;
+  top: -40px; right: 0;
+  color: var(--white);
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  cursor: none;
+}
+.modal-close:hover { color: var(--red); }
+.video-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #060608;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--grey);
+}
+
+
+/* ── EXPÉRIENCES ── */
+#experiences { background:var(--bg2); }
+.exp-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:20px; margin-top:52px;
+}
+.exp-card {
+  background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.05);
+  padding:36px 28px; position:relative; overflow:hidden;
+  opacity:0; transform:translateY(36px); transition:all .6s ease;
+}
+.exp-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--red); transform:scaleX(0); transform-origin:left;
+  transition:transform .4s ease;
+}
+.exp-card:hover::after { transform:scaleX(1); }
+.exp-card:hover {
+  background:rgba(232,50,26,.04);
+  border-color:rgba(232,50,26,.18);
+  transform:translateY(-5px) !important;
+}
+section.vis .exp-card { opacity:1; transform:translateY(0); }
+section.vis .exp-card:nth-child(1){transition-delay:.08s}
+section.vis .exp-card:nth-child(2){transition-delay:.2s}
+section.vis .exp-card:nth-child(3){transition-delay:.32s}
+.exp-num {
+  font-family:'Big Shoulders Display',sans-serif; font-size:70px;
+  font-weight:900; color:rgba(232,50,26,.12); line-height:1; margin-bottom:14px;
+}
+.exp-co {
+  font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--red); margin-bottom:8px;
+}
+.exp-role {
+  font-family:'Big Shoulders Display',sans-serif; font-size:22px;
+  font-weight:700; color:var(--white); margin-bottom:6px;
+}
+.exp-date { font-size:12px; color:var(--grey); margin-bottom:18px; }
+.exp-desc { font-size:13px; font-weight:300; color:var(--grey); line-height:1.72; }
+.exp-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:18px; }
+.exp-tag {
+  font-size:10px; padding:4px 10px;
+  background:rgba(232,50,26,.1); color:var(--red); border-radius:2px;
+}
+
+/* ── CV & LM ── */
+#cvlm { background:var(--bg); }
+.cv-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:32px; margin-top:52px;
+}
+.cv-card {
+  background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05);
+  padding:44px; position:relative; overflow:hidden;
+  opacity:0; transform:translateY(28px); transition:all .7s ease;
+}
+section.vis .cv-card { opacity:1; transform:none; }
+section.vis .cv-card:nth-child(2){ transition-delay:.15s; }
+.cv-ghost {
+  font-family:'Big Shoulders Display',sans-serif; font-size:90px; font-weight:900;
+  color:rgba(232,50,26,.08); position:absolute; top:16px; right:24px; line-height:1;
+}
+.cv-title {
+  font-family:'Big Shoulders Display',sans-serif; font-size:30px;
+  font-weight:700; color:var(--white); margin-bottom:14px;
+}
+.cv-info { font-size:14px; font-weight:300; color:var(--grey); line-height:1.7; }
+.cv-items { margin-top:22px; display:flex; flex-direction:column; gap:9px; }
+.cv-i {
+  font-size:13px; color:rgba(242,238,232,.58);
+  display:flex; align-items:flex-start; gap:10px;
+}
+.cv-i::before { content:'—'; color:var(--red); flex-shrink:0; }
+
+/* ── FORMULAIRE CONTACT ── */
+.contact-form {
+  display: flex; flex-direction: column; gap: 10px; width: 100%;
+}
+.contact-form input, .contact-form textarea {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+  padding: 12px 16px; color: var(--white); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; outline: none; transition: border-color .3s;
+}
+.contact-form textarea { resize: vertical; min-height: 80px; }
+.contact-form input:focus, .contact-form textarea:focus { border-color: var(--red); }
+
+/* ── PROJET FUTUR ── */
+#futur { background:var(--bg2); overflow:hidden; }
+.futur-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:70px; align-items:start; margin-top:52px;
+}
+.futur-goals { display:flex; flex-direction:column; gap:28px; }
+.goal {
+  display:flex; gap:22px; align-items:flex-start;
+  opacity:0; transform:translateX(-18px); transition:all .6s ease;
+}
+section.vis .goal:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+section.vis .goal:nth-child(2){opacity:1;transform:none;transition-delay:.24s}
+section.vis .goal:nth-child(3){opacity:1;transform:none;transition-delay:.38s}
+.goal-ico {
+  width:46px; height:46px; flex-shrink:0;
+  border:1px solid var(--red); display:flex;
+  align-items:center; justify-content:center; font-size:20px;
+}
+.goal-ttl {
+  font-family:'Big Shoulders Display',sans-serif; font-size:22px;
+  font-weight:700; color:var(--white); margin-bottom:5px;
+}
+.goal-desc { font-size:14px; font-weight:300; color:var(--grey); line-height:1.65; }
+.futur-box {
+  border:1px solid rgba(232,50,26,.2); background:rgba(232,50,26,.03);
+  padding:44px; text-align:center;
+  opacity:0; transform:translateX(28px); transition:all .8s ease .3s;
+}
+section.vis .futur-box { opacity:1; transform:none; }
+.futur-yr {
+  font-family:'Big Shoulders Display',sans-serif; font-size:130px;
+  font-weight:900; color:rgba(232,50,26,.18); line-height:1;
+}
+.futur-deg {
+  font-family:'Big Shoulders Display',sans-serif; font-size:34px;
+  font-weight:700; color:var(--white); margin:12px 0 6px;
+}
+.futur-sub { font-size:13px; color:var(--grey); }
+.futur-contact {
+  margin-top:28px; padding-top:28px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.futur-contact .cl {
+  font-size:11px; color:var(--red); letter-spacing:.18em;
+  text-transform:uppercase; margin-bottom:6px;
+}
+.futur-contact .cv { font-size:15px; color:var(--white); }
+.futur-contact .cs { font-size:13px; color:var(--grey); margin-top:3px; }
+
+/* ── MERCI ── */
+#merci {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  text-align:center; background:var(--bg); position:relative; overflow:hidden;
+}
+.merci-glow {
+  position:absolute; width:700px; height:700px; border-radius:50%;
+  background:radial-gradient(circle,rgba(232,50,26,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.merci-inner { padding:80px 48px; z-index:1; }
+.merci-ttl {
+  font-family:'Big Shoulders Display',sans-serif; font-weight:900;
+  font-size:clamp(72px,13vw,170px); text-transform:uppercase; line-height:.87;
+  color:var(--white); opacity:0; transform:translateY(36px); transition:all 1s ease;
+}
+.merci-ttl span { color:var(--red); }
+section.vis .merci-ttl { opacity:1; transform:none; }
+.merci-sub {
+  font-size:17px; font-weight:300; color:var(--grey);
+  margin-top:22px; opacity:0; transform:translateY(18px);
+  transition:all .8s ease .3s;
+}
+section.vis .merci-sub { opacity:1; transform:none; }
+.contact-row {
+  display:flex; justify-content:center; gap:44px; margin-top:44px;
+  flex-wrap:wrap; opacity:0; transform:translateY(18px);
+  transition:all .8s ease .5s;
+}
+section.vis .contact-row { opacity:1; transform:none; }
+.c-item { display:flex; flex-direction:column; gap:3px; }
+.c-lbl { font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--red); }
+.c-val { font-size:15px; color:var(--white); }
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp {
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn {
+  to { opacity:1; }
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scaleY(1); }
+  50% { opacity:.4; transform:scaleY(.65); }
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .propos-grid,.sae-grid,.futur-grid,.cv-grid,.exp-grid { grid-template-columns:1fr; }
+  .exp-grid { grid-template-columns:1fr 1fr; }
+  .sae-img { height: 250px; }
+  .hero-stats { display:none; }
+  nav { padding:18px 24px; }
+  .nav-links { gap:18px; }
+  .si { padding:80px 24px; }
+  #hero { padding: 0 6vw; }
+}
+@media(max-width:600px){
+  .exp-grid { grid-template-columns:1fr; }
+  .nav-links { display:none; }
+  .contact-row { gap:28px; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<div id="sp"></div>
+
+<div class="modal-overlay" id="videoModal">
+  <div class="modal-content">
+    <div class="modal-close" id="closeModal">Fermer [X]</div>
+    <div class="video-placeholder">
+      <span style="font-size: 40px; margin-bottom: 10px;">▶</span>
+      <p>Emplacement de la vidéo du projet</p>
+      <p style="font-size: 12px; color: #555;">(Remplacer ceci par une balise &lt;video&gt; plus tard)</p>
+    </div>
+  </div>
+</div>
+
+<canvas id="bg"></canvas>
+
+<nav>
+  <a href="#hero" class="nav-logo">G<span>.</span>F</a>
+  <ul class="nav-links">
+    <li><a href="#parcours">Parcours</a></li>
+    <li><a href="#propos">Profil</a></li>
+    <li><a href="#sae">SAÉ</a></li>
+    <li><a href="#projets">Projets</a></li>
+    <li><a href="#experiences">Expériences</a></li>
+  </ul>
+</nav>
+
+<div class="content">
+
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-label">Portfolio — BUT QLIO 2024–2026</div>
+  <div class="hero-name">Gana<span>Fouad</span></div>
+  <p class="hero-sub">Étudiant en BUT Qualité Logistique Industrielle et Organisationnelle à l'Université Paris Cité 8 — Passionné par l'optimisation des processus et la satisfaction client.</p>
+  <div class="hero-cta">
+    <a href="#parcours" class="btn-red">Découvrir mon parcours →</a>
+    <a href="#cvlm" class="btn-ghost">Me contacter →</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">3+</div><div class="stat-l">Expériences</div></div>
+    <div class="stat"><div class="stat-n">2</div><div class="stat-l">Années BUT</div></div>
+    <div class="stat"><div class="stat-n">8</div><div class="stat-l">Compétences clés</div></div>
+  </div>
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section id="parcours">
+  <div class="si">
+    <div class="s-num">01</div>
+    <div class="s-lbl">01 — Parcours Académique</div>
+    <h2 class="s-title">Mon<br>Chemin</h2>
+    <div class="divider"></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot">1</div>
+        <div>
+          <div class="tl-date">Créteil</div>
+          <div class="tl-title">Collège Simone de Beauvoir</div>
+          <div class="tl-desc">Formation générale, développement des bases académiques et personnelles à Créteil.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">2</div>
+        <div>
+          <div class="tl-date">2023 — Créteil</div>
+          <div class="tl-title">Lycée Gutenberg — BAC STMG</div>
+          <div class="tl-desc">Baccalauréat STMG – Spécialité Mercatique. Formation orientée vers la gestion, les sciences du management et les technologies de l'information.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">3</div>
+        <div>
+          <div class="tl-date">2024 — En cours</div>
+          <div class="tl-title">BAFA — Mairie de Bonneuil-sur-Marne</div>
+          <div class="tl-desc">Formation BAFA en cours (Phase 2). Animation et encadrement de groupes de jeunes, développement du sens des responsabilités.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">4</div>
+        <div>
+          <div class="tl-date">2024–2026 — Actuel</div>
+          <div class="tl-title">IUT Montreuil — BUT QLIO</div>
+          <div class="tl-desc">BUT Qualité Logistique Industrielle et Organisationnelle à l'Université Paris Cité 8. Gestion de la qualité, logistique industrielle, amélioration continue et outils de pilotage de la performance. Permis B obtenu en 2024.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="propos">
+  <div class="si">
+    <div class="s-num">02</div>
+    <div class="s-lbl">02 — Profil</div>
+    <h2 class="s-title">À Propos<br>de Moi</h2>
+    <div class="divider"></div>
+    <div class="propos-grid">
+      <div>
+        <p class="propos-txt">
+          Étudiant en <strong>BUT Qualité Logistique</strong>, je suis passionné par l'optimisation des processus et la gestion de la qualité. Mon objectif est d'améliorer l'efficacité des systèmes logistiques tout en garantissant la <strong>satisfaction client</strong>.<br><br>
+          Grâce à mes études et mes expériences terrain, j'ai acquis des compétences en <strong>analyse de données</strong>, gestion des flux et résolution de problèmes. Curieux et motivé, je cherche à contribuer à l'<strong>amélioration continue</strong> des organisations.
+        </p>
+      </div>
+      <div class="skills">
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Gestion qualité & amélioration continue</span><span class="sk-pct">90%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="90"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Organisation & optimisation des processus</span><span class="sk-pct">85%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="85"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Gestion des stocks & flux logistiques</span><span class="sk-pct">88%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="88"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Planification de la production</span><span class="sk-pct">80%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="80"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Analyse & résolution de problèmes</span><span class="sk-pct">85%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="85"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Excel · Odyssée · SolidWorks</span><span class="sk-pct">75%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="75"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Travail en équipe & communication</span><span class="sk-pct">92%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="92"></div></div>
+        </div>
+        <div class="sk-item">
+          <div class="sk-hd"><span class="sk-n">Gestion du temps & délais</span><span class="sk-pct">88%</span></div>
+          <div class="sk-bg"><div class="sk-fill" data-level="88"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sae">
+  <div class="si">
+    <div class="s-num">03</div>
+    <div class="s-lbl">03 — SAÉ</div>
+    <h2 class="s-title">Situation<br>Apprenante</h2>
+    <div class="divider"></div>
+    <div class="sae-grid">
+      <div class="sae-txt">
+        <p>Dans le cadre de ma formation BUT QLIO, j'ai travaillé sur une <strong>SAÉ (Situation d'Apprentissage et d'Évaluation)</strong> utilisant le logiciel <strong>Odyssée</strong>.</p>
+        <p>Odyssée est un logiciel de simulation de gestion des stocks et des flux industriels, souvent utilisé dans des entrepôts, ateliers ou usines. Cette expérience m'a permis de mettre en pratique les compétences théoriques en conditions réelles.</p>
+        <div class="tags">
+          <span class="tag">Gestion des stocks</span>
+          <span class="tag">Flux industriels</span>
+          <span class="tag">Simulation</span>
+          <span class="tag">Odyssée</span>
+          <span class="tag">Planification</span>
+          <span class="tag">Analyse de données</span>
+        </div>
+      </div>
+      <div class="sae-box">
+        <div class="sae-bg-txt">ODYSSÉE</div>
+        <div class="sae-label">ODYSSÉE</div>
+        <div class="sae-desc">Logiciel de simulation industrielle pour la gestion des flux logistiques en temps réel.</div>
+        
+        <div class="sae-kpis">
+          <div class="kpi"><div class="kpi-val">OF/OA</div><div class="kpi-lbl">Gestion ordres</div></div>
+          <div class="kpi"><div class="kpi-val">SIM</div><div class="kpi-lbl">Simulation</div></div>
+          <div class="kpi"><div class="kpi-val">KPI</div><div class="kpi-lbl">Indicateurs</div></div>
+          <div class="kpi"><div class="kpi-val">TSC</div><div class="kpi-lbl">Taux service client</div></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="sae-images-wrapper">
+      <img src="images.jpg" alt="Interface Principale Odyssée" class="sae-img" />
+      <img src="_7605194_orig.png" alt="Simulation Chariot Odyssée" class="sae-img" />
+    </div>
+
+  </div>
+</section>
+
+<section id="projets">
+  <div class="si">
+    <div class="s-num">04</div>
+    <div class="s-lbl">04 — Réalisations</div>
+    <h2 class="s-title">Projet<br>Vidéo</h2>
+    <div class="divider"></div>
+    
+    <div class="projet-box" id="openModalBtn">
+      <div class="projet-icon">📂</div>
+      <div class="projet-title">Dossier Technique</div>
+      <div class="projet-desc">Cliquer ici pour visionner la présentation vidéo du projet logistique.</div>
+    </div>
+    
+  </div>
+</section>
+
+<section id="experiences">
+  <div class="si">
+    <div class="s-num">05</div>
+    <div class="s-lbl">05 — Expériences Professionnelles</div>
+    <h2 class="s-title">Terrain<br>& Action</h2>
+    <div class="divider"></div>
+    <div class="exp-grid">
+      <div class="exp-card">
+        <div class="exp-num">01</div>
+        <div class="exp-co">Vinted Go</div>
+        <div class="exp-role">Agent de Tri</div>
+        <div class="exp-date">Depuis septembre 2025 — Poste actuel</div>
+        <div class="exp-desc">Tri, scan et contrôle des colis au sein d'une plateforme logistique. Gestion des anomalies et colis endommagés. Garantir la conformité des flux entrants et sortants, respect des délais et consignes de sécurité.</div>
+        <div class="exp-tags">
+          <span class="exp-tag">Logistique opérationnelle</span>
+          <span class="exp-tag">Contrôle qualité</span>
+          <span class="exp-tag">Gestion des flux</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <div class="exp-num">02</div>
+        <div class="exp-co">Association Ummanité</div>
+        <div class="exp-role">Stagiaire Logistique</div>
+        <div class="exp-date">Janvier 2025</div>
+        <div class="exp-desc">Gestion des stocks, organisation de l'entrepôt et préparation des livraisons. Amélioration des flux de distribution et optimisation des méthodes de travail en lien direct avec les notions de qualité et d'amélioration continue abordées en BUT QLIO.</div>
+        <div class="exp-tags">
+          <span class="exp-tag">Gestion des stocks</span>
+          <span class="exp-tag">Amélioration continue</span>
+          <span class="exp-tag">Organisation</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <div class="exp-num">03</div>
+        <div class="exp-co">Auto-Entrepreneur</div>
+        <div class="exp-role">Livreur</div>
+        <div class="exp-date">Décembre 2024 — Mai 2025</div>
+        <div class="exp-desc">Optimisation des tournées et respect des délais. Relation client, autonomie et sens du service. Chargement et déchargement sécurisé (courses, repas, colis).</div>
+        <div class="exp-tags">
+          <span class="exp-tag">Optimisation tournées</span>
+          <span class="exp-tag">Relation client</span>
+          <span class="exp-tag">Autonomie</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cvlm">
+  <div class="si">
+    <div class="s-num">06</div>
+    <div class="s-lbl">06 — Documents</div>
+    <h2 class="s-title">CV &<br>Contact</h2>
+    <div class="divider"></div>
+    <div class="cv-grid">
+      
+      <div class="cv-card">
+        <div class="cv-ghost">CV</div>
+        <div class="cv-title">Curriculum Vitæ</div>
+        <div class="cv-info">Étudiant en BUT QLIO — Qualité, Logistique Industrielle et Organisation — à la recherche d'un stage en logistique ou qualité.</div>
+        <div class="cv-items">
+          <div class="cv-i">BUT QLIO, IUT Montreuil — Université Paris 8 (2024–2026)</div>
+          <div class="cv-i">BAC STMG – Mercatique, Lycée Gutenberg (2023)</div>
+          <div class="cv-i">Agent de tri – Vinted Go (poste actuel depuis sept. 2025)</div>
+          <div class="cv-i">Livreur auto-entrepreneur (déc. 2024 – mai 2025)</div>
+          <div class="cv-i">Stagiaire logistique – Asso. Ummanité (jan. 2025)</div>
+          <div class="cv-i">Excel · Odyssée · SolidWorks · Word · PowerPoint</div>
+          <div class="cv-i">Permis B obtenu en 2024</div>
+        </div>
+        <div style="margin-top:26px;">
+          <a href="CV_Fouad_Gana.pdf" download="CV_Fouad_Gana.pdf" class="btn-red">Télécharger le CV (PDF) ↓</a>
+        </div>
+      </div>
+      
+      <div class="cv-card">
+        <div class="cv-ghost">@</div>
+        <div class="cv-title">Me Contacter</div>
+        <div class="cv-info">Une question ? Une opportunité de stage de 3 mois ? Envoyez-moi un message directement via ce formulaire.</div>
+        <div style="margin-top:26px;">
+          <form action="https://formspree.io/f/xqeglgbn" method="POST" class="contact-form">
+            <input type="email" name="email" placeholder="Votre adresse email" required>
+            <textarea name="message" placeholder="Votre message" rows="3" required></textarea>
+            <button type="submit" class="btn-red">Envoyer le message →</button>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section id="futur">
+  <div class="si">
+    <div class="s-num">07</div>
+    <div class="s-lbl">07 — Vision</div>
+    <h2 class="s-title">Projet<br>Futur</h2>
+    <div class="divider"></div>
+    <div class="futur-grid">
+      <div class="futur-goals">
+        <div class="goal">
+          <div class="goal-ico">🎓</div>
+          <div>
+            <div class="goal-ttl">Master QSHE</div>
+            <div class="goal-desc">Qualité, Sécurité, Hygiène, Environnement — Approfondir mes compétences et évoluer vers un rôle de responsable qualité dans un environnement industriel.</div>
+          </div>
+        </div>
+        <div class="goal">
+          <div class="goal-ico">🏭</div>
+          <div>
+            <div class="goal-ttl">Alternance en Logistique</div>
+            <div class="goal-desc">Cible : Assistant Logistique en alternance — Acquérir une expérience terrain significative dans un environnement professionnel exigeant et porteur de valeur ajoutée.</div>
+          </div>
+        </div>
+        <div class="goal">
+          <div class="goal-ico">📈</div>
+          <div>
+            <div class="goal-ttl">Amélioration Continue</div>
+            <div class="goal-desc">Intégrer une organisation dynamique pour participer à des projets d'amélioration des processus, de performance logistique et de contrôle qualité.</div>
+          </div>
+        </div>
+      </div>
+      <div class="futur-box">
+        <div class="futur-yr">2026</div>
+        <div class="futur-deg">Master QSHE</div>
+        <div class="futur-sub">Qualité · Sécurité · Hygiène · Environnement</div>
+        <div class="futur-contact">
+          <div class="cl">Contact</div>
+          <div class="cv">+33 7-65-83-24-76</div>
+          <div class="cs">gana.fouad27@gmail.com</div>
+          <div class="cs" style="margin-top:4px;">Bonneuil-sur-Marne, Île-de-France</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="merci">
+  <div class="merci-glow" style="top:-200px;right:-200px;"></div>
+  <div class="merci-glow" style="bottom:-200px;left:-200px;"></div>
+  <div class="merci-inner">
+    <div class="merci-ttl">Merci de<br><span>m'avoir</span><br>écouté</div>
+    <div class="merci-sub">Fouad Gana — BUT QLIO 2024–2026 — IUT Montreuil, Université Paris Cité 8</div>
+    <div class="contact-row">
+      <div class="c-item"><span class="c-lbl">Téléphone</span><span class="c-val">+33 7-65-83-24-76</span></div>
+      <div class="c-item"><span class="c-lbl">Email</span><span class="c-val">gana.fouad27@gmail.com</span></div>
+      <div class="c-item"><span class="c-lbl">Adresse</span><span class="c-val">Bonneuil-sur-Marne</span></div>
+    </div>
+  </div>
+</section>
+
+</div><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ─── CURSOR ─── */
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx+'px'; cur.style.top = my+'px';
+});
+(function trackRing(){
+  rx += (mx-rx)*.12; ry += (my-ry)*.12;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(trackRing);
+})();
+
+// Ajout du curseur spécial sur les éléments cliquables
+document.querySelectorAll('a, button, .exp-card, .sae-img, .projet-box, .modal-close').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.width='18px'; cur.style.height='18px';
+    ring.style.width='56px'; ring.style.height='56px';
+    ring.style.borderColor='rgba(232,50,26,.9)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.width='12px'; cur.style.height='12px';
+    ring.style.width='40px'; ring.style.height='40px';
+    ring.style.borderColor='rgba(232,50,26,.5)';
+  });
+});
+
+/* ─── GESTION FENÊTRE MODALE VIDÉO ─── */
+const modalBtn = document.getElementById('openModalBtn');
+const videoModal = document.getElementById('videoModal');
+const closeModal = document.getElementById('closeModal');
+
+modalBtn.addEventListener('click', () => {
+  videoModal.classList.add('active');
+});
+closeModal.addEventListener('click', () => {
+  videoModal.classList.remove('active');
+});
+// Fermer en cliquant à l'extérieur
+videoModal.addEventListener('click', (e) => {
+  if(e.target === videoModal) videoModal.classList.remove('active');
+});
+
+/* ─── SCROLL PROGRESS ─── */
+const sp = document.getElementById('sp');
+window.addEventListener('scroll',()=>{
+  const p = window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  sp.style.width = p+'%';
+},{ passive:true });
+
+/* ─── THREE.JS SCENE ─── */
+const canvas3 = document.getElementById('bg');
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(58, innerWidth/innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas:canvas3, antialias:true, alpha:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0x000000, 0);
+
+scene.fog = new THREE.FogExp2(0x060608, 0.016);
+
+cam.position.set(0, 0, 80);
+
+// Lights
+scene.add(new THREE.AmbientLight(0x08080f, 1.2));
+const rl1 = new THREE.PointLight(0xe8321a, 4, 70);
+const rl2 = new THREE.PointLight(0xe8321a, 2.5, 55);
+const bl  = new THREE.PointLight(0x1a2ae8, 1.2, 90);
+scene.add(rl1,rl2,bl);
+
+// Détection mobile basique pour la performance
+const isMobile = window.innerWidth < 768;
+const cubeCount = isMobile ? 50 : 140;
+const particleCount = isMobile ? 800 : 2400;
+
+// Tunnel of boxes (logistics crates)
+const cubes = [];
+const TL = 280; // tunnel length
+const boxG = new THREE.BoxGeometry(2.8,2.8,2.8);
+const edgeMat = new THREE.LineBasicMaterial({ color:0xe8321a, transparent:true, opacity:.35 });
+
+for(let i=0; i<cubeCount; i++){
+  const mat = new THREE.MeshPhongMaterial({
+    color: new THREE.Color(.05,.05,.09),
+    shininess: 90,
+    specular: new THREE.Color(.2,.1,.05),
+  });
+  const mesh = new THREE.Mesh(boxG, mat);
+
+  // Edge wireframe
+  if (!isMobile) {
+      const eg = new THREE.EdgesGeometry(boxG);
+      const em = edgeMat.clone();
+      em.opacity = .2 + Math.random()*.3;
+      mesh.add(new THREE.LineSegments(eg, em));
+  }
+
+  // Tunnel spiral arrangement
+  const angle = (i%12)*(Math.PI*2/12) + Math.floor(i/12)*.25;
+  const r = 9 + Math.random()*9;
+  mesh.position.set(
+    Math.cos(angle)*r,
+    Math.sin(angle)*r,
+    -(i/cubeCount)*TL + 15
+  );
+  mesh.rotation.set(
+    Math.random()*Math.PI,
+    Math.random()*Math.PI,
+    Math.random()*Math.PI
+  );
+  mesh.userData.rs = {
+    x:(Math.random()-.5)*.009,
+    y:(Math.random()-.5)*.009,
+    z:(Math.random()-.5)*.005
+  };
+  scene.add(mesh);
+  cubes.push(mesh);
+}
+
+// Particle field
+const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(particleCount * 3);
+for(let i=0; i<particleCount; i++){
+  pPos[i*3]   = (Math.random()-.5)*90;
+  pPos[i*3+1] = (Math.random()-.5)*90;
+  pPos[i*3+2] = Math.random()*-TL;
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
+const pts = new THREE.Points(pGeo, new THREE.PointsMaterial({
+  color:0xe8321a, size:.13, transparent:true, opacity:.35
+}));
+scene.add(pts);
+
+// Add a large wireframe cube at the end (like a portal)
+const portalG = new THREE.BoxGeometry(30,30,30);
+const portalE = new THREE.EdgesGeometry(portalG);
+const portal  = new THREE.LineSegments(portalE, new THREE.LineBasicMaterial({color:0xe8321a,transparent:true,opacity:.2}));
+portal.position.z = -TL + 20;
+scene.add(portal);
+
+// Grid floor
+const gridH = new THREE.GridHelper(200,40,0x1a0a00,0x0d0600);
+gridH.position.z = -TL/2;
+gridH.position.y = -18;
+scene.add(gridH);
+
+// Scroll → camera Z
+let targetZ = 80, currZ = 80;
+window.addEventListener('scroll',()=>{
+  const f = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  targetZ = 80 - f*(TL-60);
+},{ passive:true });
+
+// Animate
+let t = 0;
+(function anim(){
+  requestAnimationFrame(anim);
+  t += .007;
+
+  // Smooth camera travel
+  currZ += (targetZ-currZ)*.05;
+  cam.position.z = currZ;
+  cam.position.x = Math.sin(t*.25)*1.8;
+  cam.position.y = Math.cos(t*.18)*1.0;
+  cam.lookAt(cam.position.x*.25, cam.position.y*.25, currZ-28);
+
+  // Rotate each cube
+  cubes.forEach(c=>{
+    c.rotation.x += c.userData.rs.x;
+    c.rotation.y += c.userData.rs.y;
+    c.rotation.z += c.userData.rs.z;
+  });
+
+  // Orbit lights with camera
+  rl1.position.set(Math.sin(t)*22, Math.cos(t*.7)*14, currZ-25+Math.sin(t*.5)*8);
+  rl2.position.set(-Math.sin(t*.8)*22, -Math.cos(t*.6)*12, currZ-55);
+  bl.position.z = currZ+12;
+
+  // Portal slow rotation
+  portal.rotation.z = t*.1;
+
+  pts.rotation.y = t*.008;
+
+  renderer.render(scene, cam);
+})();
+
+// Resize
+window.addEventListener('resize',()=>{
+  cam.aspect = innerWidth/innerHeight;
+  cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+
+/* ─── INTERSECTION OBSERVER ─── */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(!entry.isIntersecting) return;
+    entry.target.classList.add('vis');
+
+    // Timeline items stagger
+    entry.target.querySelectorAll('.tl-item').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('vis'), i*160);
+    });
+
+    // Skill bars
+    entry.target.querySelectorAll('.sk-fill').forEach(bar=>{
+      const lvl = bar.getAttribute('data-level');
+      setTimeout(()=>{ bar.style.width = lvl+'%'; }, 450);
+    });
+  });
+},{ threshold:.12 });
+
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+
+/* ─── SMOOTH SCROLL ─── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    // Ne pas empêcher le comportement des liens normaux (CV/Action)
+    if(a.getAttribute('download') || a.getAttribute('target')) return;
+    
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({ behavior:'smooth' });
+  });
+});
+</script>
+</body>
+</html>
