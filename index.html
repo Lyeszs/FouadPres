@@ -133,7 +133,11 @@ nav {
   letter-spacing:.05em; transition:color .3s; display:flex; align-items:center; gap:6px;
 }
 .btn-ghost:hover { color:var(--white); }
-
+.hero-stats {
+  position:absolute; right:10vw; bottom:90px;
+  display:flex; flex-direction:column; gap:22px;
+  opacity:0; animation: fadeIn 1s ease 1.3s forwards; z-index:1;
+}
 .stat { text-align:right; }
 .stat-n {
   font-family:'Big Shoulders Display',sans-serif; font-size:52px;
@@ -744,6 +748,29 @@ nav.scrolled {
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { animation-duration:.01ms !important; animation-delay:0s !important; transition-duration:.01ms !important; }
 }
+
+/* ── Projet vidéo : juste la vidéo + ouverture façon macOS ── */
+.projet-box { padding:0; margin:52px auto 0; max-width:880px; aspect-ratio:16/9; cursor:none;
+  background:linear-gradient(135deg,rgba(232,50,26,.10),rgba(255,255,255,.02)); }
+.projet-thumb { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none;
+  filter:brightness(.7); transition:transform .8s var(--ease), filter .5s; }
+.projet-box:hover .projet-thumb { transform:scale(1.04); filter:brightness(.9); }
+.projet-icon { position:absolute; top:50%; left:50%; margin:0; transform:translate(-50%,-50%);
+  background:rgba(6,6,8,.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:2; }
+.projet-box:hover .projet-icon { transform:translate(-50%,-50%) scale(1.12); }
+.projet-box:active .projet-icon { transform:translate(-50%,-50%) scale(.96); }
+
+.modal-overlay { background:rgba(0,0,0,.72); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  transition:opacity .45s ease, visibility .45s ease; }
+.modal-content { width:min(92vw,1000px); background:#000; border:1px solid var(--line); border-radius:var(--r);
+  transition:none; transform:none; overflow:visible; box-shadow:0 40px 120px -20px rgba(0,0,0,.8), 0 0 0 1px rgba(232,50,26,.15); will-change:transform,opacity; }
+.modal-overlay.active .modal-content { transform:none; }
+.modal-content video { display:block; width:100%; max-height:80vh; border-radius:var(--r); background:#000; }
+.modal-close { top:-52px; right:0; width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+  border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--white);
+  font-size:15px; cursor:none; transition:background .3s, transform .3s var(--ease); }
+.modal-close:hover { background:var(--red); transform:rotate(90deg); color:var(--white); }
+@media (hover:none){ .projet-box,.modal-close{ cursor:pointer; } }
 </style>
 </head>
 <body>
@@ -755,12 +782,8 @@ nav.scrolled {
 
 <div class="modal-overlay" id="videoModal">
   <div class="modal-content">
-    <div class="modal-close" id="closeModal">Fermer [X]</div>
-    <div class="video-placeholder">
-      <span style="font-size: 40px; margin-bottom: 10px;">▶</span>
-      <p>Emplacement de la vidéo du projet</p>
-      <p style="font-size: 12px; color: #555;">(Remplacer ceci par une balise &lt;video&gt; plus tard)</p>
-    </div>
+    <button class="modal-close" id="closeModal" aria-label="Fermer">✕</button>
+    <video id="projVideo" src="video.mp4" controls playsinline preload="metadata"></video>
   </div>
 </div>
 
@@ -789,7 +812,11 @@ nav.scrolled {
     <a href="#parcours" class="btn-red">Découvrir mon parcours →</a>
     <a href="#cvlm" class="btn-ghost">Me contacter →</a>
   </div>
-
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">4</div><div class="stat-l">Expériences</div></div>
+    <div class="stat"><div class="stat-n">2</div><div class="stat-l">Années BUT</div></div>
+    <div class="stat"><div class="stat-n">8</div><div class="stat-l">Compétences clés</div></div>
+  </div>
   <div class="scroll-cue">
     <span>Scroll</span>
     <div class="scroll-line"></div>
@@ -938,12 +965,11 @@ nav.scrolled {
     <h2 class="s-title">Projet<br>Vidéo</h2>
     <div class="divider"></div>
     
-    <div class="projet-box" id="openModalBtn">
+    <div class="projet-box" id="openModalBtn" role="button" tabindex="0" aria-label="Lire la vidéo">
+      <video class="projet-thumb" src="video.mp4#t=0.5" preload="metadata" muted playsinline></video>
       <div class="projet-icon">▶</div>
-      <div class="projet-title">Dossier Technique</div>
-      <div class="projet-desc">Cliquer ici pour visionner la présentation vidéo du projet logistique.</div>
     </div>
-    
+
   </div>
 </section>
 
@@ -1145,16 +1171,44 @@ const modalBtn = document.getElementById('openModalBtn');
 const videoModal = document.getElementById('videoModal');
 const closeModal = document.getElementById('closeModal');
 
-modalBtn.addEventListener('click', () => {
+const modalContent = videoModal.querySelector('.modal-content');
+const projVideo = document.getElementById('projVideo');
+let modalAnim = null;
+
+// Transformation « depuis la carte » (effet ouverture d'appli macOS)
+function fromCard(){
+  const a = modalBtn.getBoundingClientRect(), b = modalContent.getBoundingClientRect();
+  const k = a.width / b.width;
+  const dx = (a.left + a.width/2) - (b.left + b.width/2);
+  const dy = (a.top + a.height/2) - (b.top + b.height/2);
+  return `translate(${dx}px, ${dy}px) scale(${k})`;
+}
+function openVideo(){
+  if (videoModal.classList.contains('active')) return;
   videoModal.classList.add('active');
-});
-closeModal.addEventListener('click', () => {
+  const from = fromCard();
+  if (modalAnim) modalAnim.cancel();
+  modalAnim = modalContent.animate(
+    [{ transform: from, opacity: .2 }, { transform: 'translate(0,0) scale(1.015)', opacity: 1, offset: .75 }, { transform: 'none', opacity: 1 }],
+    { duration: 650, easing: 'cubic-bezier(.2,.85,.25,1)', fill: 'none' }
+  );
+  modalAnim.onfinish = () => { projVideo.play().catch(()=>{}); };
+}
+function closeVideo(){
+  if (!videoModal.classList.contains('active')) return;
+  projVideo.pause();
+  const to = fromCard();
   videoModal.classList.remove('active');
-});
-// Fermer en cliquant à l'extérieur
-videoModal.addEventListener('click', (e) => {
-  if(e.target === videoModal) videoModal.classList.remove('active');
-});
+  if (modalAnim) modalAnim.cancel();
+  modalContent.animate(
+    [{ transform: 'none', opacity: 1 }, { transform: to, opacity: 0 }],
+    { duration: 450, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'none' }
+  );
+}
+modalBtn.addEventListener('click', openVideo);
+modalBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVideo(); } });
+closeModal.addEventListener('click', closeVideo);
+videoModal.addEventListener('click', e => { if (e.target === videoModal) closeVideo(); });
 
 /* ─── SCROLL PROGRESS ─── */
 const sp = document.getElementById('sp');
@@ -1411,7 +1465,7 @@ document.querySelectorAll('.tag, .goal, input, textarea, .tl-item').forEach(el =
 });
 
 // Échap ferme la fenêtre vidéo
-addEventListener('keydown', e => { if (e.key === 'Escape') videoModal.classList.remove('active'); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closeVideo(); });
 </script>
 </body>
 </html>
