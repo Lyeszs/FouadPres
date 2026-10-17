@@ -610,6 +610,144 @@ section.vis .contact-row { opacity:1; transform:none; }
   .nav-links { display:none; }
   .contact-row { gap:28px; }
 }
+
+.exp-grid { grid-template-columns:repeat(2,1fr); }
+section.vis .exp-card:nth-child(4){ transition-delay:.44s; }
+@media (max-width:600px){ .exp-grid { grid-template-columns:1fr; } }
+/* ═══════════ REFONTE — style épuré & interactions ═══════════ */
+:root {
+  --line: rgba(255,255,255,.08);
+  --card: rgba(255,255,255,.03);
+  --r: 14px;
+  --ease: cubic-bezier(.2,.7,.2,1);
+}
+#bg { opacity:.55; }
+#sp { background:linear-gradient(to right,var(--red),#ff7055); box-shadow:0 0 12px rgba(232,50,26,.6); }
+
+/* Sections translucides : le fond 3D respire à travers un voile unique */
+#parcours,#sae,#experiences,#futur { background:rgba(11,11,16,.80); }
+#propos,#projets,#cvlm,#merci { background:rgba(6,6,8,.72); }
+.s-num { display:none; }
+.si { padding:120px 48px; }
+.s-lbl { letter-spacing:.3em; display:flex; align-items:center; gap:14px; }
+.s-lbl::before { content:''; width:28px; height:1px; background:var(--red); }
+.s-title { font-weight:800; font-size:clamp(42px,6.2vw,76px); letter-spacing:.01em; line-height:.95; }
+.divider { margin:26px 0 48px; width:48px; }
+
+/* Navigation */
+nav { transition:padding .4s var(--ease), background .4s, border-color .4s; border-bottom:1px solid transparent; }
+nav.scrolled {
+  padding:14px 48px; background:rgba(6,6,8,.72);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom-color:var(--line);
+}
+.nav-links a { position:relative; padding:6px 0; }
+.nav-links a::after {
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:var(--red); transform:scaleX(0); transform-origin:left; transition:transform .35s var(--ease);
+}
+.nav-links a:hover, .nav-links a.active { color:var(--white); }
+.nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+
+/* Hero */
+.hero-glow { width:700px; height:700px; transition:transform .8s ease-out; }
+.hero-name { animation:none; opacity:1; transform:none; font-weight:800; font-size:clamp(64px,13vw,170px); line-height:.92; }
+.hero-name .w { display:block; overflow:hidden; color:var(--white); padding-bottom:.04em; }
+.hero-name .w.r { color:var(--red); }
+.hero-name .ch {
+  display:inline-block; color:inherit; opacity:0; transform:translateY(105%);
+  animation:chIn .9s var(--ease) forwards; animation-delay:calc(.45s + var(--i,0)*.055s);
+  transition:color .3s, transform .3s var(--ease);
+}
+.hero-name .w:not(.r) .ch:hover { color:var(--red); }
+@keyframes chIn { to { opacity:1; transform:none; } }
+.stat-n { font-weight:800; }
+
+/* Boutons */
+.btn-red {
+  clip-path:none; border-radius:999px; padding:15px 32px;
+  box-shadow:0 10px 30px -12px rgba(232,50,26,.7);
+  transition:background .3s, box-shadow .3s, transform .25s ease-out;
+}
+.btn-red:hover { box-shadow:0 14px 36px -10px rgba(232,50,26,.85); }
+.btn-ghost { position:relative; padding-bottom:3px; }
+.btn-ghost::after {
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--red);
+  transform:scaleX(0); transform-origin:left; transition:transform .35s var(--ease);
+}
+.btn-ghost:hover::after { transform:scaleX(1); }
+
+/* Cartes unifiées + effet spotlight (suit la souris) */
+.exp-card,.cv-card,.sae-box,.futur-box,.projet-box,.kpi {
+  border:1px solid var(--line); background:var(--card); border-radius:var(--r);
+}
+.fx { position:relative; overflow:hidden; }
+.fx::before {
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .4s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(232,50,26,.13), transparent 60%);
+}
+.fx:hover::before { opacity:1; }
+.fx:hover { border-color:rgba(232,50,26,.35); }
+.exp-card {
+  transition:opacity .6s ease, transform .25s ease-out, background .3s, border-color .3s;
+  transform-style:preserve-3d; will-change:transform;
+}
+.exp-card:hover {
+  transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-6px) !important;
+  transition-delay:0s !important; background:var(--card);
+}
+.exp-card::after { border-radius:var(--r) var(--r) 0 0; }
+.exp-num { font-weight:800; color:rgba(232,50,26,.14); }
+.exp-tag, .tag { border-radius:999px; }
+.exp-tag { padding:5px 12px; }
+.tag { border-color:rgba(232,50,26,.3); transition:all .3s var(--ease); }
+.tag:hover { transform:translateY(-2px); }
+.cv-ghost { font-weight:800; }
+.sae-box { background:var(--card); }
+.kpi { transition:transform .3s var(--ease), border-color .3s; }
+.kpi:hover { transform:translateY(-3px); }
+.sae-img { border-radius:var(--r); }
+
+/* Projet vidéo */
+.projet-box { border:1px solid var(--line); background:var(--card); }
+.projet-box:hover { border-color:rgba(232,50,26,.5); background:var(--card); }
+.projet-icon {
+  width:72px; height:72px; margin:0 auto 20px; border-radius:50%;
+  border:1px solid var(--red); color:var(--red); font-size:22px; padding-left:4px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .3s, color .3s, transform .4s var(--ease), box-shadow .4s;
+}
+.projet-box:hover .projet-icon { background:var(--red); color:var(--white); transform:scale(1.1); box-shadow:0 0 0 10px rgba(232,50,26,.12); }
+.modal-content { border-radius:var(--r); }
+
+/* Timeline */
+.tl-dot { transition:background .3s, color .3s, transform .3s var(--ease), box-shadow .3s; }
+.tl-item:hover .tl-dot { background:var(--red); color:var(--white); transform:scale(1.12); box-shadow:0 0 0 8px rgba(232,50,26,.12); }
+.tl-title { transition:color .3s; }
+.tl-item:hover .tl-title { color:var(--red); }
+
+/* Compétences */
+.sk-item { transition:opacity .5s ease, transform .5s ease; }
+.sk-item:hover .sk-n { color:var(--red); }
+.sk-bg { height:3px; border-radius:3px; }
+.sk-fill { border-radius:3px; }
+
+/* Objectifs */
+.goal-ico { border-radius:12px; transition:background .3s, transform .3s var(--ease); }
+.goal:hover .goal-ico { background:rgba(232,50,26,.12); transform:rotate(-6deg) scale(1.06); }
+
+/* Formulaire */
+.contact-form input,.contact-form textarea { border-radius:10px; }
+.contact-form input:focus,.contact-form textarea:focus { box-shadow:0 0 0 3px rgba(232,50,26,.15); }
+
+@media (hover:none) {
+  body { cursor:auto; } #cur,#cur-ring { display:none; }
+  .btn-red,.projet-box,.modal-close { cursor:pointer; }
+}
+@media (max-width:900px) { nav.scrolled { padding:12px 24px; } .si { padding:84px 24px; } }
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; animation-delay:0s !important; transition-duration:.01ms !important; }
+}
 </style>
 </head>
 <body>
@@ -640,6 +778,7 @@ section.vis .contact-row { opacity:1; transform:none; }
     <li><a href="#sae">SAÉ</a></li>
     <li><a href="#projets">Projets</a></li>
     <li><a href="#experiences">Expériences</a></li>
+    <li><a href="#cvlm">Contact</a></li>
   </ul>
 </nav>
 
@@ -648,14 +787,14 @@ section.vis .contact-row { opacity:1; transform:none; }
 <section id="hero">
   <div class="hero-glow"></div>
   <div class="hero-label">Portfolio — BUT QLIO 2024–2026</div>
-  <div class="hero-name">Gana<span>Fouad</span></div>
+  <h1 class="hero-name"><span class="w">Gana</span><span class="w r">Fouad</span></h1>
   <p class="hero-sub">Étudiant en BUT Qualité Logistique Industrielle et Organisationnelle à l'Université Paris Cité 8 — Passionné par l'optimisation des processus et la satisfaction client.</p>
   <div class="hero-cta">
     <a href="#parcours" class="btn-red">Découvrir mon parcours →</a>
     <a href="#cvlm" class="btn-ghost">Me contacter →</a>
   </div>
   <div class="hero-stats">
-    <div class="stat"><div class="stat-n">3+</div><div class="stat-l">Expériences</div></div>
+    <div class="stat"><div class="stat-n">4</div><div class="stat-l">Expériences</div></div>
     <div class="stat"><div class="stat-n">2</div><div class="stat-l">Années BUT</div></div>
     <div class="stat"><div class="stat-n">8</div><div class="stat-l">Compétences clés</div></div>
   </div>
@@ -808,7 +947,7 @@ section.vis .contact-row { opacity:1; transform:none; }
     <div class="divider"></div>
     
     <div class="projet-box" id="openModalBtn">
-      <div class="projet-icon">📂</div>
+      <div class="projet-icon">▶</div>
       <div class="projet-title">Dossier Technique</div>
       <div class="projet-desc">Cliquer ici pour visionner la présentation vidéo du projet logistique.</div>
     </div>
@@ -825,6 +964,19 @@ section.vis .contact-row { opacity:1; transform:none; }
     <div class="exp-grid">
       <div class="exp-card">
         <div class="exp-num">01</div>
+        <div class="exp-co">Chronopost · La Queue-en-Brie (compte Robert)</div>
+        <div class="exp-role">Alternant Manager des Opérations</div>
+        <div class="exp-date">2025 — En cours</div>
+        <div class="exp-desc">Réalisation d'audits qualité terrain : contrôle des procédures, identification des non-conformités et remontée des écarts. Suivi et analyse des KPIs pour évaluer la fiabilité des flux. Participation à l'optimisation des processus de tri, scanning et expédition des colis. Encadrement et coordination des équipes opérationnelles. Mise en place et suivi d'actions correctives dans une démarche d'amélioration continue, et interface entre les équipes terrain et la direction pour le reporting des anomalies.</div>
+        <div class="exp-tags">
+          <span class="exp-tag">Audit qualité</span>
+          <span class="exp-tag">Management d'équipe</span>
+          <span class="exp-tag">KPIs</span>
+          <span class="exp-tag">Amélioration continue</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <div class="exp-num">02</div>
         <div class="exp-co">Vinted Go</div>
         <div class="exp-role">Agent de Tri</div>
         <div class="exp-date">Depuis septembre 2025 — Poste actuel</div>
@@ -836,27 +988,27 @@ section.vis .contact-row { opacity:1; transform:none; }
         </div>
       </div>
       <div class="exp-card">
-        <div class="exp-num">02</div>
+        <div class="exp-num">03</div>
+        <div class="exp-co">Association Ummanité · Pôle Éco-Solidarité</div>
+        <div class="exp-role">Responsable Maraudes</div>
+        <div class="exp-date">2025 — En cours</div>
+        <div class="exp-desc">Organisation et encadrement des maraudes au sein du pôle éco-solidarité. Accompagnement des personnes en situation de précarité (aide alimentaire, écoute, orientation). Coordination logistique des sorties : planification, gestion des ressources et des bénévoles. Suivi des besoins terrain et remontée d'informations au pôle.</div>
+        <div class="exp-tags">
+          <span class="exp-tag">Encadrement</span>
+          <span class="exp-tag">Coordination logistique</span>
+          <span class="exp-tag">Accompagnement social</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <div class="exp-num">04</div>
         <div class="exp-co">Association Ummanité</div>
         <div class="exp-role">Stagiaire Logistique</div>
         <div class="exp-date">Janvier 2025</div>
-        <div class="exp-desc">Gestion des stocks, organisation de l'entrepôt et préparation des livraisons. Amélioration des flux de distribution et optimisation des méthodes de travail en lien direct avec les notions de qualité et d'amélioration continue abordées en BUT QLIO.</div>
+        <div class="exp-desc">Appui à la gestion des stocks et des livraisons. Participation à l'organisation de l'entrepôt et à l'amélioration des flux.</div>
         <div class="exp-tags">
           <span class="exp-tag">Gestion des stocks</span>
           <span class="exp-tag">Amélioration continue</span>
           <span class="exp-tag">Organisation</span>
-        </div>
-      </div>
-      <div class="exp-card">
-        <div class="exp-num">03</div>
-        <div class="exp-co">Auto-Entrepreneur</div>
-        <div class="exp-role">Livreur</div>
-        <div class="exp-date">Décembre 2024 — Mai 2025</div>
-        <div class="exp-desc">Optimisation des tournées et respect des délais. Relation client, autonomie et sens du service. Chargement et déchargement sécurisé (courses, repas, colis).</div>
-        <div class="exp-tags">
-          <span class="exp-tag">Optimisation tournées</span>
-          <span class="exp-tag">Relation client</span>
-          <span class="exp-tag">Autonomie</span>
         </div>
       </div>
     </div>
@@ -878,8 +1030,9 @@ section.vis .contact-row { opacity:1; transform:none; }
         <div class="cv-items">
           <div class="cv-i">BUT QLIO, IUT Montreuil — Université Paris 8 (2024–2026)</div>
           <div class="cv-i">BAC STMG – Mercatique, Lycée Gutenberg (2023)</div>
+          <div class="cv-i">Alternant Manager des Opérations – Chronopost La Queue-en-Brie (2025 – en cours)</div>
           <div class="cv-i">Agent de tri – Vinted Go (poste actuel depuis sept. 2025)</div>
-          <div class="cv-i">Livreur auto-entrepreneur (déc. 2024 – mai 2025)</div>
+          <div class="cv-i">Responsable maraudes – Pôle Éco-Solidarité, Asso. Ummanité (2025 – en cours)</div>
           <div class="cv-i">Stagiaire logistique – Asso. Ummanité (jan. 2025)</div>
           <div class="cv-i">Excel · Odyssée · SolidWorks · Word · PowerPoint</div>
           <div class="cv-i">Permis B obtenu en 2024</div>
@@ -1040,8 +1193,8 @@ scene.add(rl1,rl2,bl);
 
 // Détection mobile basique pour la performance
 const isMobile = window.innerWidth < 768;
-const cubeCount = isMobile ? 50 : 140;
-const particleCount = isMobile ? 800 : 2400;
+const cubeCount = isMobile ? 40 : 90;
+const particleCount = isMobile ? 600 : 1500;
 
 // Tunnel of boxes (logistics crates)
 const cubes = [];
@@ -1061,7 +1214,7 @@ for(let i=0; i<cubeCount; i++){
   if (!isMobile) {
       const eg = new THREE.EdgesGeometry(boxG);
       const em = edgeMat.clone();
-      em.opacity = .2 + Math.random()*.3;
+      em.opacity = .1 + Math.random()*.16;
       mesh.add(new THREE.LineSegments(eg, em));
   }
 
@@ -1097,7 +1250,7 @@ for(let i=0; i<particleCount; i++){
 }
 pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
 const pts = new THREE.Points(pGeo, new THREE.PointsMaterial({
-  color:0xe8321a, size:.13, transparent:true, opacity:.35
+  color:0xe8321a, size:.12, transparent:true, opacity:.22
 }));
 scene.add(pts);
 
@@ -1193,6 +1346,80 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     if(t) t.scrollIntoView({ behavior:'smooth' });
   });
 });
+
+/* ═══════════ INTERACTIONS ═══════════ */
+// Nav : fond au scroll
+const navEl = document.querySelector('nav');
+const onNavScroll = () => navEl.classList.toggle('scrolled', scrollY > 40);
+addEventListener('scroll', onNavScroll, { passive:true }); onNavScroll();
+
+// Nav : lien actif selon la section visible
+const navLinks = [...document.querySelectorAll('.nav-links a')];
+const spy = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+}), { threshold:.45 });
+document.querySelectorAll('section[id]').forEach(sec => spy.observe(sec));
+
+// Hero : nom révélé lettre par lettre
+document.querySelectorAll('.hero-name .w').forEach((w, k) => {
+  const txt = w.textContent; w.textContent = '';
+  [...txt].forEach((c, i) => {
+    const sp = document.createElement('span');
+    sp.className = 'ch'; sp.textContent = c; sp.style.setProperty('--i', i + k*4);
+    w.appendChild(sp);
+  });
+});
+
+// Hero : halo qui suit la souris
+const glow = document.querySelector('.hero-glow');
+document.getElementById('hero').addEventListener('mousemove', e => {
+  glow.style.transform = `translate(${e.clientX*.35}px, ${e.clientY*.35}px)`;
+});
+
+// Hero : compteurs animés
+document.querySelectorAll('.stat-n').forEach(el => {
+  const m = el.textContent.match(/(\d+)(.*)/); if (!m) return;
+  const end = +m[1], suf = m[2], t0 = performance.now() + 1300;
+  el.textContent = '0' + suf;
+  (function tick(now){
+    const p = Math.min(Math.max((now - t0) / 1200, 0), 1);
+    el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))) + suf;
+    if (p < 1) requestAnimationFrame(tick);
+  })(performance.now());
+});
+
+// Cartes : spotlight + légère inclinaison 3D
+document.querySelectorAll('.exp-card,.cv-card,.sae-box,.futur-box,.projet-box,.kpi').forEach(el => {
+  el.classList.add('fx');
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    el.style.setProperty('--mx', x + 'px'); el.style.setProperty('--my', y + 'px');
+    if (el.classList.contains('exp-card')) {
+      el.style.setProperty('--ry', ((x / r.width - .5) * 8) + 'deg');
+      el.style.setProperty('--rx', (-(y / r.height - .5) * 8) + 'deg');
+    }
+  });
+  el.addEventListener('mouseleave', () => { el.style.setProperty('--rx', '0deg'); el.style.setProperty('--ry', '0deg'); });
+});
+
+// Boutons magnétiques
+document.querySelectorAll('.btn-red').forEach(b => {
+  b.addEventListener('mousemove', e => {
+    const r = b.getBoundingClientRect();
+    b.style.transform = `translate(${(e.clientX - r.left - r.width/2) * .22}px, ${(e.clientY - r.top - r.height/2) * .35 - 2}px)`;
+  });
+  b.addEventListener('mouseleave', () => { b.style.transform = ''; });
+});
+
+// Curseur : agrandi aussi sur tags, objectifs et champs
+document.querySelectorAll('.tag, .goal, input, textarea, .tl-item').forEach(el => {
+  el.addEventListener('mouseenter', () => { ring.style.width = '56px'; ring.style.height = '56px'; ring.style.borderColor = 'rgba(232,50,26,.9)'; });
+  el.addEventListener('mouseleave', () => { ring.style.width = '40px'; ring.style.height = '40px'; ring.style.borderColor = 'rgba(232,50,26,.5)'; });
+});
+
+// Échap ferme la fenêtre vidéo
+addEventListener('keydown', e => { if (e.key === 'Escape') videoModal.classList.remove('active'); });
 </script>
 </body>
 </html>
